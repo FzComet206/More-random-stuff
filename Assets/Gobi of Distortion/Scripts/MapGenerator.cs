@@ -105,24 +105,6 @@ public class MapGenerator : MonoBehaviour
         return noiseMap;
     }
 
-    public void DrawLayerMesh()
-    {
-
-        var layerMapInt = SpawnManager.ZeroOneDistance(NoiseMap.GetSpawnMap()[layerIndex]);
-
-        float[,] layerMap = new float[layerMapInt.GetLength(0), layerMapInt.GetLength(1)];
-        for (int i = 0; i < layerMapInt.GetLength(0); i++)
-        {
-            for (int j = 0; j < layerMap.GetLength(1); j++)
-            {
-                layerMap[i, j] = (float) layerMapInt[i, j];
-            }
-        }
-
-        ActualMapDisplay display = FindObjectOfType<ActualMapDisplay>();
-        display.DrawLayerMeshMap(MeshGenerator.GenerateTerrainMesh(layerMap, depth, useFlatShading));
-    }
-
     public void DrawMesh()
     {
         GetNoiseMap();
@@ -137,6 +119,7 @@ public class MapGenerator : MonoBehaviour
             TextureGenerator.TextureFromColourMap(
                 noiseMapCache,
                 regions,
+                mapWidth,
                 mapWidth
             ));
     }
@@ -161,14 +144,6 @@ public class MapGenerator : MonoBehaviour
                 obj.transform.parent = spawnerPool;
                 objectPool.Add(obj);
             }
-        }
-    }
-
-    public void DeleteObjs()
-    {
-        foreach (var obj in objectPool)
-        {
-            DestroyImmediate(obj);
         }
     }
 }

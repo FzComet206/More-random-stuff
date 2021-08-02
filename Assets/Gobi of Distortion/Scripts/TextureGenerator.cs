@@ -2,10 +2,10 @@ using UnityEngine;
 
 public static class TextureGenerator 
 {
-    public static Texture2D TextureFromColourMap(float[,] noiseMap, MapGenerator.TerrainType[] regions ,int mapWidth)
+    public static Texture2D TextureFromColourMap(float[,] noiseMap, MapGenerator.TerrainType[] regions ,int mapWidth, int mapHeight)
     {
-        Color[] colourMap = new Color[mapWidth * mapWidth];
-        for (int y = 0; y < mapWidth; y++)
+        Color[] colourMap = new Color[mapWidth * mapHeight];
+        for (int y = 0; y < mapHeight; y++)
         {
             for (int x = 0; x < mapWidth; x++)
             {
@@ -21,7 +21,7 @@ public static class TextureGenerator
             }
         }
         
-        Texture2D texture = new Texture2D(mapWidth, mapWidth);
+        Texture2D texture = new Texture2D(mapWidth, mapHeight);
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.SetPixels(colourMap);

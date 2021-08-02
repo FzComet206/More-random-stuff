@@ -6,11 +6,12 @@ public class MeshGenerator
     public static MeshData GenerateTerrainMesh(float [,] heightMap, float heightScale, bool useFlatShading)
     {
         int width = heightMap.GetLength(0);
+        int height = heightMap.GetLength(1);
         int vertexIndex = 0;
         
-        MeshData meshData = new MeshData(width, useFlatShading);
+        MeshData meshData = new MeshData(width, height, useFlatShading);
         
-        for (int y = 0; y < width; y++)
+        for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
@@ -20,7 +21,7 @@ public class MeshGenerator
                 meshData.uvs[vertexIndex] = new Vector2(x / (float) width, y / (float) width);
 
                 // ignore right and bottom vertices for the map
-                if (x < width - 1 && y < width - 1)
+                if (x < width - 1 && y < height - 1)
                 {
                     // vertices to first triangles (i --> i + width + 1 --> i + width)
                     // vertices to second triangles (i + width + 1 --> i --> i + 1)
@@ -55,12 +56,12 @@ public class MeshData
     private bool useFlatShading;
     
     // constructor
-    public MeshData(int meshWidth, bool useFlatShading)
+    public MeshData(int meshWidth, int meshHeight, bool useFlatShading)
     {
         this.useFlatShading = useFlatShading;
-        vertices = new Vector3[meshWidth * meshWidth];
-        triangles = new int[(meshWidth - 1) * (meshWidth - 1) * 6];
-        uvs = new Vector2[meshWidth * meshWidth];
+        vertices = new Vector3[meshWidth * meshHeight];
+        triangles = new int[(meshWidth - 1) * (meshHeight - 1) * 6];
+        uvs = new Vector2[meshWidth * meshHeight];
     }
 
     public void AddTriangles(int a, int b, int c)
