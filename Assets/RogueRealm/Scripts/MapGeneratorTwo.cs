@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 using Random = System.Random;
 
 public class MapGeneratorTwo : MonoBehaviour
@@ -7,7 +8,7 @@ public class MapGeneratorTwo : MonoBehaviour
     public int mapWidth;
     public int mapHeight;
     public int depth;
-    
+
     // cache
     private float[,] noiseMapCache;
 
@@ -15,7 +16,6 @@ public class MapGeneratorTwo : MonoBehaviour
     public struct Area
     {
         public int numberOfNodes;
-        public float minDistance;
     }
 
     public Area[] areas;
@@ -30,7 +30,7 @@ public class MapGeneratorTwo : MonoBehaviour
 
     private float[,] GetNoiseMap()
     {
-        float[,] heightMap =  GenerateHeightMap.GetHeightMap(mapWidth, mapHeight, areas);
+        float[,] heightMap =  GenerateHeightMap.GetHeightMap(mapWidth, mapHeight, areas, depth);
         noiseMapCache = heightMap;
         return heightMap;
     }

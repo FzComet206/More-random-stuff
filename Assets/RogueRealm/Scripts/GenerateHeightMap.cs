@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEditor.Timeline;
 
 public class Node
 {
@@ -31,9 +32,9 @@ public class Graph
 
 public class GenerateHeightMap
 {
-    public static float[,] GetHeightMap(int width, int height, MapGeneratorTwo.Area[] areas)
+    public static float[,] GetHeightMap(int width, int height, MapGeneratorTwo.Area[] areas, float depth)
     {
-        System.Random random = new System.Random(174115261);
+        System.Random random = new System.Random();
         List<Node> nodeList = new List<Node>();
         
         float[,] heightMap = new float[width,height];
@@ -48,17 +49,29 @@ public class GenerateHeightMap
             int num = areas[c].numberOfNodes;
             
             // get current areas of the iteration
-            List<Vector2> currLocations = new List<Vector2>();
-            for (int i = start; i < curr; i++)
+            List<Vector2> possibleLocations = new List<Vector2>();
+
+            // hard coded grid distance so that the nodes dont overlaps with a radius
+            int gridDistance = 40;
+            
+            //for (int i = start + gridDistance; i < curr - gridDistance; i+= gridDistance)
+            //{
+                //for (int j = gridDistance; j < height - gridDistance; j+= gridDistance)
+                //{
+                    //possibleLocations.Add(new Vector2(i, j));
+                //}
+            //}
+
+            for (int i = start + gridDistance; i < curr - gridDistance; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (int j = gridDistance; j < height - gridDistance; j++)
                 {
-                    currLocations.Add(new Vector2(i, j));
+                    possibleLocations.Add(new Vector2(i, j));
                 }
             }
-
+            
             // select from current area
-            var selectedLocations = currLocations
+            var selectedLocations = possibleLocations 
                 .OrderBy(x => random.Next())
                 .Take(num);
             
@@ -72,8 +85,8 @@ public class GenerateHeightMap
                     paths = null, 
                     position = loc,
                     areaIndex = c,
-                    minRadius = 8,
-                    maxRadius = 25
+                    minRadius = 18,
+                    maxRadius = 30
                 };
 
                 nodeList.Add(node);
@@ -86,17 +99,28 @@ public class GenerateHeightMap
         // set dungeon radius
         foreach (var node in nodeList)
         {
+            // init a node
             int rad = random.Next(node.minRadius, node.maxRadius);
+            node.positionPixels = new Vector3[(2*rad+1) * (2*rad+1)];
+
+            int positionPixelIndex = 0;
+            
             for (int i = -rad; i < rad + 1; i++)
             {
                 for (int j = -rad; j < rad + 1; j++)
                 {
+                    // x and y coordinate
                     int x = (int) node.position.x + i;
                     int y = (int) node.position.y + j;
+                    
+                    // also store the position pixels
+                    node.positionPixels[positionPixelIndex] = new Vector3(x, depth, y);
+                    positionPixelIndex++;
 
+                    // edge cases
                     if (x < width && y < height && x >= 0 && y >= 0)
                     {
-                        heightMap[x, y] = -10f;
+                        heightMap[x, y] = -depth;
                     }
                 }
             }
@@ -104,11 +128,10 @@ public class GenerateHeightMap
         
         // this nodelist is key to graph
 
-        // pick positions for nodes
-        // put those nodes and their distance to each other into a Gabriel graph
+        // put those nodes and their distance to each other into a graph
         // figure out minimal spanning tree from the graph and get the paths
         // add a few paths from the original graph to make few loops
-        // represent the path in the matrix withs 1s through A-Star
+        // represent the path in the matrix withs heights and fatten them
         // fatten the paths and the nodes (rooms)
         // apply some cellular automata or perlin worms
 
