@@ -30,7 +30,7 @@ public class MapGeneratorTwo : MonoBehaviour
 
     private float[,] GetNoiseMap()
     {
-        float[,] heightMap =  GenerateHeightMap.GetHeightMap(mapWidth, mapHeight);
+        float[,] heightMap =  GenerateHeightMap.GetHeightMap(mapWidth, mapHeight, areas);
         noiseMapCache = heightMap;
         return heightMap;
     }

@@ -391,16 +391,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c90bd63d4364c8b4286733110bd45c4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapWidth: 800
-  mapHeight: 1800
+  mapWidth: 1800
+  mapHeight: 800
   depth: 1
   areas:
-  - numberOfNodes: 0
+  - numberOfNodes: 2
+    minDistance: 0
+  - numberOfNodes: 4
+    minDistance: 0
+  - numberOfNodes: 8
+    minDistance: 0
+  - numberOfNodes: 10
+    minDistance: 0
+  - numberOfNodes: 8
+    minDistance: 0
+  - numberOfNodes: 4
+    minDistance: 0
+  - numberOfNodes: 2
     minDistance: 0
   regions:
   - name: xd
-    height: 0
-    color: {r: 0.4528302, g: 0.22171623, b: 0.1003916, a: 0}
+    height: -10
+    color: {r: 0.43867922, g: 0.90644664, b: 1, a: 0}
 --- !u!1 &1167718829
 GameObject:
   m_ObjectHideFlags: 0
