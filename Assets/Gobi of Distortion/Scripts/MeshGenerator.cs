@@ -18,7 +18,7 @@ public class MeshGenerator
                     // this sets the vertices for mesh
                     meshData.vertices[vertexIndex] = new Vector3(x, heightMap[x, y] * heightScale, y);
                     // uv tells each vertex where it locates with respect to rest vertices (0 to 1)
-                    meshData.uvs[vertexIndex] = new Vector2(x / (float) width, y / (float) width);
+                    meshData.uvs[vertexIndex] = new Vector2(x / (float) width, y / (float) height);
 
                     // ignore right and bottom vertices for the map
                     if (x < width - 1 && y < height - 1)

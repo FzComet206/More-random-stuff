@@ -8,6 +8,7 @@ public class MapGeneratorTwo : MonoBehaviour
     public int mapWidth;
     public int mapHeight;
     public int depth;
+    public int seed;
 
     // cache
     private float[,] noiseMapCache;
@@ -15,7 +16,7 @@ public class MapGeneratorTwo : MonoBehaviour
     [System.Serializable]
     public struct Area
     {
-        public int numberOfNodes;
+        public int numberOfCaves;
     }
 
     public Area[] areas;
@@ -30,7 +31,7 @@ public class MapGeneratorTwo : MonoBehaviour
 
     private float[,] GetNoiseMap()
     {
-        float[,] heightMap =  GenerateHeightMap.GetHeightMap(mapWidth, mapHeight, areas, depth);
+        float[,] heightMap =  GenerateHeightMap.GetHeightMap(mapWidth, mapHeight, areas, depth, seed);
         noiseMapCache = heightMap;
         return heightMap;
     }

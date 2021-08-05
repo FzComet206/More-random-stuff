@@ -293,13 +293,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 582091302}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 599, z: 0}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 895.0601, y: 927, z: 433}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &582091306
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,17 +394,21 @@ MonoBehaviour:
   mapWidth: 1800
   mapHeight: 900
   depth: 3
+  seed: 123
   areas:
-  - numberOfNodes: 3
-  - numberOfNodes: 6
-  - numberOfNodes: 9
-  - numberOfNodes: 9
-  - numberOfNodes: 6
-  - numberOfNodes: 3
+  - numberOfCaves: 2
+  - numberOfCaves: 4
+  - numberOfCaves: 4
+  - numberOfCaves: 4
+  - numberOfCaves: 4
+  - numberOfCaves: 2
   regions:
   - name: xd
-    height: -5
-    color: {r: 1, g: 0.6894007, b: 0.08962262, a: 0}
+    height: 3
+    color: {r: 0.6367924, g: 0.94242585, b: 1, a: 0}
+  - name: xd
+    height: 0
+    color: {r: 0.49056602, g: 0.26514462, b: 0.0995016, a: 0}
 --- !u!1 &1167718829
 GameObject:
   m_ObjectHideFlags: 0
