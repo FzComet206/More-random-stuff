@@ -33,20 +33,24 @@ public class Graph
 
 public class GenerateHeightMap
 {
-    public static float[,] GetHeightMap(int width, int height, MapGeneratorTwo.Area[] areas, float depth, int seed)
+    public static float[,] GetHeightMap(MapGeneratorTwo.MapOptions2 options)
     {
-        System.Random random = new System.Random(seed.GetHashCode());
+        int width = options.mapWidth;
+        int height = options.mapHeight;
+        int depth = options.depth;
+        
+        System.Random random = new System.Random(options.seed.GetHashCode());
         List<Node> nodeList = new List<Node>();
         
         float[,] heightMap = new float[width, height];
 
-        int parts = width / areas.Length;
+        int parts = width / options.areas.Length;
         int curr = parts;
         int start = 0;
         
-        for (int c = 0; c < areas.Length; c++)
+        for (int c = 0; c < options.areas.Length; c++)
         {
-            int num = areas[c].numberOfCaves;
+            int num = options.areas[c].numberOfCaves;
             
             // get current areas of the iteration
             List<Vector2> possibleLocations = new List<Vector2>();
@@ -54,9 +58,9 @@ public class GenerateHeightMap
             // hard coded grid distance so that the nodes dont overlaps with a radius
             int gridDistance = 30;
 
-            for (int i = start + gridDistance; i < curr - gridDistance; i += gridDistance)
+            for (int i = start + gridDistance; i < curr; i += gridDistance)
             {
-                for (int j = gridDistance; j < height - gridDistance; j += gridDistance)
+                for (int j = gridDistance; j < height; j += gridDistance)
                 {
                     possibleLocations.Add(new Vector2(i, j));
                 }
@@ -78,8 +82,8 @@ public class GenerateHeightMap
                     paths = null, 
                     position = loc,
                     areaIndex = c,
-                    minRadius = 40,
-                    maxRadius = 40
+                    minRadius = 10,
+                    maxRadius = 10
                 };
 
                 nodeList.Add(node);
@@ -135,6 +139,53 @@ public class GenerateHeightMap
     }
 
     private static float[,] DrawPath(float[,] heightMap, List<Path> paths, float depth)
+    {
+        foreach (var path in paths)
+        {
+            Vector2 start = path.left.position;
+            Vector2 end = path.right.position;
+
+            int startX = (int) start.x;
+            int startY = (int) start.y;
+
+            int endX = (int) end.x;
+            int endY = (int) end.y;
+
+            if (startX < endX)
+            {
+                for (int i = startX; i < endX; i++)
+                {
+                    heightMap[i, startY] = depth;
+                }
+            }
+            else
+            {
+                for (int i = startX; i > endX; i--)
+                {
+                    heightMap[i, startY] = depth;
+                }
+            }
+
+            if (startY < endY)
+            {
+                for (int i = startY; i < endY; i++)
+                {
+                    heightMap[endX, i] = depth;
+                }
+            }
+            else
+            {
+                for (int i = startY; i > endY; i--)
+                {
+                    heightMap[endX, i] = depth;
+                }
+            }
+        }
+        
+        return heightMap;
+    }
+
+    private static float[,] DrawPathSlope(float[,] heightMap, List<Path> paths, float depth)
     {
         foreach (var path in paths)
         {

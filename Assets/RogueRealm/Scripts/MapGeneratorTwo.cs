@@ -5,23 +5,28 @@ using Random = System.Random;
 
 public class MapGeneratorTwo : MonoBehaviour
 {
-    public int mapWidth;
-    public int mapHeight;
-    public int depth;
-    public int seed;
-
-    // cache
-    private float[,] noiseMapCache;
-
     [System.Serializable]
     public struct Area
     {
         public int numberOfCaves;
     }
+    
+    [System.Serializable]
+    public struct MapOptions2
+    {
+        public int mapWidth;
+        public int mapHeight;
+        public int depth;
+        public int seed;
+        public Area[] areas;
+    }
 
-    public Area[] areas;
-
+    // serialize fields
+    public MapOptions2 options;
     public MapGenerator.TerrainType[] regions;
+    
+    // cache
+    private float[,] noiseMapCache;
     
     private void Start()
     {
@@ -31,7 +36,7 @@ public class MapGeneratorTwo : MonoBehaviour
 
     private float[,] GetNoiseMap()
     {
-        float[,] heightMap =  GenerateHeightMap.GetHeightMap(mapWidth, mapHeight, areas, depth, seed);
+        float[,] heightMap =  GenerateHeightMap.GetHeightMap(options);
         noiseMapCache = heightMap;
         return heightMap;
     }
@@ -40,7 +45,7 @@ public class MapGeneratorTwo : MonoBehaviour
     {
         GetNoiseMap();
         ActualMapDisplay display = FindObjectOfType<ActualMapDisplay>();
-        display.DrawMeshMap(MeshGenerator.GenerateTerrainMesh(noiseMapCache, depth, true));
+        display.DrawMeshMap(MeshGenerator.GenerateTerrainMesh(noiseMapCache, options.depth, true));
     }
 
     public void DrawTextureMap()
@@ -50,8 +55,8 @@ public class MapGeneratorTwo : MonoBehaviour
             TextureGenerator.TextureFromColourMap(
                 noiseMapCache,
                 regions,
-                mapWidth,
-                mapHeight
+                options.mapWidth,
+                options.mapHeight
             ));
     }
 }

@@ -92,20 +92,29 @@ public static class SpawnManager
 
                     if (curr[j, k] != 0 && occupiedMap[j, k] != 1)
                     {
-                        if (currEntity.clearRadius != 0)
+                        int r = currEntity.clearRadius;
+                        
+                        // below process clear radius
+                        if (r != 0)
                         {
-                            int r = currEntity.clearRadius;
-                            for (int m = -r; m < r; m++)
+                            if (r == 1)
                             {
-                                for (int n = -r; n < r; n++)
+                                occupiedMap[j, k] = 1;
+                            }
+                            else
+                            {
+                                for (int m = -r; m < r; m++)
                                 {
-                                    try
+                                    for (int n = -r; n < r; n++)
                                     {
-                                        // if radius is too large that causes index error
-                                        // just ignore
-                                        occupiedMap[j + m, k + n] = 1;
+                                        try
+                                        {
+                                            // if radius is too large that causes index error
+                                            // just ignore
+                                            occupiedMap[j + m, k + n] = 1;
+                                        }
+                                        catch (Exception e) {}
                                     }
-                                    catch (Exception e) {}
                                 }
                             }
                         }

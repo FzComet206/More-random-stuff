@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 78952ef3406844648b403ab6de0e13b3, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -269,8 +269,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 500
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -394,14 +394,26 @@ MonoBehaviour:
   mapWidth: 1800
   mapHeight: 900
   depth: 3
-  seed: 123
+  seed: 174115261
   areas:
-  - numberOfCaves: 2
-  - numberOfCaves: 4
-  - numberOfCaves: 4
-  - numberOfCaves: 4
-  - numberOfCaves: 4
-  - numberOfCaves: 2
+  - numberOfCaves: 6
+  - numberOfCaves: 12
+  - numberOfCaves: 15
+  - numberOfCaves: 15
+  - numberOfCaves: 12
+  - numberOfCaves: 6
+  options:
+    mapWidth: 1800
+    mapHeight: 900
+    depth: 3
+    seed: 174115261
+    areas:
+    - numberOfCaves: 6
+    - numberOfCaves: 12
+    - numberOfCaves: 15
+    - numberOfCaves: 15
+    - numberOfCaves: 12
+    - numberOfCaves: 6
   regions:
   - name: xd
     height: 3

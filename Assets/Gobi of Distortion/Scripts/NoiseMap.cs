@@ -4,32 +4,17 @@ public static class NoiseMap
 {
     private static int[][,] spawnMap;
     
-    public static float[,] GenerateNoiseMap(
-        int mapWidth,
-        float scale,
-        int octaves,
-        float persistance, 
-        float lacunarity,
-        float heightscale,
-        float offsetx, 
-        float offsety,
-        float firstClampThreshold,
-        float secondClampThreshold,
-        float thirdClampThreshold,
-        float fourthClampThreshold,
-        float fifthClampThreshold,
-        int seed,
-        bool falloff)
+    public static float[,] GenerateNoiseMap(MapGenerator.MapOptions1 options)
     {
-        
+        MapGenerator.NoiseMapOptions nm = options.noiseOptions;
         // Set seed
-        System.Random prng = new System.Random(seed);
-        Vector2[] octavesOffset = new Vector2[octaves];
-        for (int i = 0; i < octaves; i++)
+        System.Random prng = new System.Random(nm.seed);
+        Vector2[] octavesOffset = new Vector2[nm.octaves];
+        for (int i = 0; i < nm.octaves; i++)
         {
             // scrolling and random octaves
-            float offsetXOct = prng.Next(-100000, 100000) + offsetx;
-            float offsetYOct = prng.Next(-100000, 100000) + offsety;
+            float offsetXOct = prng.Next(-100000, 100000) + nm.offsetx;
+            float offsetYOct = prng.Next(-100000, 100000) + nm.offsety;
             octavesOffset[i] = new Vector2(offsetXOct, offsetYOct);
         }
         
@@ -38,15 +23,15 @@ public static class NoiseMap
         spawnMap = new int[6][,];
         for (int i = 0; i < spawnMap.Length; i++)
         {
-            spawnMap[i] = new int[mapWidth, mapWidth];
+            spawnMap[i] = new int[nm.mapWidth, nm.mapWidth];
         }
 
-        float[,] noiseMap = new float[mapWidth, mapWidth];
+        float[,] noiseMap = new float[nm.mapWidth, nm.mapWidth];
 
         // clamp scale
-        if (scale <= 0)
+        if (nm.scale <= 0)
         {
-            scale = 0.0001f;
+            nm.scale = 0.0001f;
         }
         
         
@@ -54,19 +39,19 @@ public static class NoiseMap
         float maxNoiseHeight = float.MinValue;
         float minNoiseHeight = float.MaxValue;
 
-        for (int y = 0; y < mapWidth; y++)
+        for (int y = 0; y < nm.mapWidth; y++)
         {
-            for (int x = 0; x < mapWidth; x++)
+            for (int x = 0; x < nm.mapWidth; x++)
             {
                 float amplitude = 1;
                 float frequency = 1;
                 float noiseHeight = 0;
 
-                for (int i = 0; i < octaves; i++)
+                for (int i = 0; i < nm.octaves; i++)
                 {
                     // apply octaves sample and offsets with scale and freq
-                    float sampleX = x / scale * frequency + octavesOffset[i].x;
-                    float sampleY = y / scale * frequency + octavesOffset[i].y;
+                    float sampleX = x / nm.scale * frequency + octavesOffset[i].x;
+                    float sampleY = y / nm.scale * frequency + octavesOffset[i].y;
                     
                     // float sampleX = x / scale * frequency + offsetx;
                     // float sampleY = y / scale * frequency + offsety;
@@ -78,8 +63,8 @@ public static class NoiseMap
                     noiseHeight += perlinValue * amplitude;
 
                     // update frequence and amplitude with persistance and lacunarity
-                    amplitude *= persistance;
-                    frequency *= lacunarity;
+                    amplitude *= nm.persistance;
+                    frequency *= nm.lacunarity;
                 }
 
                 // get the max and min noise height in order to normalize the noise map
@@ -92,18 +77,18 @@ public static class NoiseMap
                     minNoiseHeight = noiseHeight;
                 }
 
-                noiseMap[x, y] = noiseHeight * heightscale;
+                noiseMap[x, y] = noiseHeight * nm.heightScale;
             }
         }
 
-        if (falloff)
+        if (nm.fallOffMap)
         {
             // get fall off map matrix
-            float[,] falloffMap = FallOffGenerator.GenerateFallOffMap(mapWidth);
+            float[,] falloffMap = FallOffGenerator.GenerateFallOffMap(nm.mapWidth);
             
-            for (int y = 0; y < mapWidth; y++)
+            for (int y = 0; y < nm.mapWidth; y++)
             {
-                for (int x = 0; x < mapWidth; x++)
+                for (int x = 0; x < nm.mapWidth; x++)
                 {
                     // inverseLerp returns 0 and 1
                     float normalizedPerlin = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
@@ -114,11 +99,11 @@ public static class NoiseMap
                     // modify perlin height based on rules
                     noiseMap[x, y] = ModifiedPerlinRules(
                         noiseMap[x,y],
-                        firstClampThreshold, 
-                        secondClampThreshold, 
-                        thirdClampThreshold,
-                        fourthClampThreshold,
-                        fifthClampThreshold,
+                        nm.firstClampThreshold, 
+                        nm.secondClampThreshold, 
+                        nm.thirdClampThreshold,
+                        nm.fourthClampThreshold,
+                        nm.fifthClampThreshold,
                         x,
                         y);
                 }
@@ -127,20 +112,20 @@ public static class NoiseMap
         else
         {
             // iterate again to normalize
-            for (int y = 0; y < mapWidth; y++)
+            for (int y = 0; y < nm.mapWidth; y++)
             {
-                for (int x = 0; x < mapWidth; x++)
+                for (int x = 0; x < nm.mapWidth; x++)
                 {
                     // inverseLerp returns 0 and 1
                     float normalizedPerlin = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
                     // modify perlin height based on rules
                     noiseMap[x, y] = ModifiedPerlinRules(
                         normalizedPerlin, 
-                        firstClampThreshold, 
-                        secondClampThreshold, 
-                        thirdClampThreshold,
-                        fourthClampThreshold,
-                        fifthClampThreshold,
+                        nm.firstClampThreshold, 
+                        nm.secondClampThreshold, 
+                        nm.thirdClampThreshold,
+                        nm.fourthClampThreshold,
+                        nm.fifthClampThreshold,
                         x,
                         y);
                 }

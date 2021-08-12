@@ -4,37 +4,38 @@ using Random = System.Random;
 
 public class MapGenerator : MonoBehaviour
 {
-    public int mapWidth;
-
-    public float noiseScale;
-
-    public int octaves;
-    public float persistance;
-    public float lacunarity;
-
-    public float heightScale;
-    public float offsetx = 0f;
-    public float offsety = 0f;
-
-    public float firstClampThreshold;
-    public float secondClampThreshold;
-    public float thirdClampThreshold;
-    public float fourthClampThreshold;
-    public float fifthClampThreshold;
-
-    public int depth;
-
-    public bool fallOffMap;
-    public bool useFlatShading;
-    public bool autoUpdate;
-
-    public int layerIndex = 0;
-
-    public TerrainType[] regions;
-
-    // below are the settings for spawn
-    public Entities[] spawnPool;
-
+    [System.Serializable]
+    public struct NoiseMapOptions
+    {
+        public int mapWidth;
+        public float scale;
+        public int octaves;
+        public float persistance;
+        public float lacunarity;
+        public float heightScale;
+        public float offsetx;
+        public float offsety;
+        public float firstClampThreshold;
+        public float secondClampThreshold;
+        public float thirdClampThreshold;
+        public float fourthClampThreshold;
+        public float fifthClampThreshold;
+        public int depth;
+        public bool fallOffMap;
+        public bool useFlatShading;
+        public int seed;
+    }
+    
+    public enum Special
+    {
+        Nope,
+        Edge,
+        Inner,
+        Center,
+        Spawn,
+        Entrance
+    } 
+    
     [System.Serializable]
     public struct Entities
     {
@@ -46,24 +47,7 @@ public class MapGenerator : MonoBehaviour
         public int clearRadius;
         public Special specialOptions;
     }
-    public enum Special
-    {
-        Nope,
-        Edge,
-        Inner,
-        Center,
-        Spawn,
-        Entrance
-    } 
     
-    // other
-    public Transform spawnerPool;
-    private int seed;
-    
-    // cache
-    private float[,] noiseMapCache;
-    private List<GameObject> objectPool;
-
     // struct giving the color correspond with height
     [System.Serializable]
     public struct TerrainType
@@ -73,10 +57,25 @@ public class MapGenerator : MonoBehaviour
         public Color color;
     }
 
+    [System.Serializable]
+    public struct MapOptions1
+    {
+        public NoiseMapOptions noiseOptions;
+        public TerrainType[] regions;
+        public Entities[] spawnPool;
+    }
+
+    public MapOptions1 options;
+    
+    // other
+    private float[,] noiseMapCache;
+    private List<GameObject> objectPool;
+    public Transform spawnerPool;
+    
     private void Start()
     {
         objectPool = new List<GameObject>();
-        seed = new Random().Next(1, 1000000);
+        options.noiseOptions.seed = new Random().Next(1, 1000000);
         DrawMesh();
         DrawTextureMap();
         SpawnObjects();
@@ -84,22 +83,7 @@ public class MapGenerator : MonoBehaviour
 
     private float[,] GetNoiseMap()
     {
-        float[,] noiseMap = NoiseMap.GenerateNoiseMap(
-            mapWidth,
-            noiseScale,
-            octaves,
-            persistance,
-            lacunarity,
-            heightScale,
-            offsetx,
-            offsety,
-            firstClampThreshold,
-            secondClampThreshold,
-            thirdClampThreshold,
-            fourthClampThreshold,
-            fifthClampThreshold,
-            seed,
-            fallOffMap);
+        float[,] noiseMap = NoiseMap.GenerateNoiseMap(options);
 
         noiseMapCache = noiseMap;
         return noiseMap;
@@ -109,7 +93,10 @@ public class MapGenerator : MonoBehaviour
     {
         GetNoiseMap();
         ActualMapDisplay display = FindObjectOfType<ActualMapDisplay>();
-        display.DrawMeshMap(MeshGenerator.GenerateTerrainMesh(noiseMapCache, depth, useFlatShading));
+        display.DrawMeshMap(MeshGenerator.GenerateTerrainMesh(
+            noiseMapCache, 
+            options.noiseOptions.depth, 
+            options.noiseOptions.useFlatShading));
     }
 
     public void DrawTextureMap()
@@ -118,15 +105,15 @@ public class MapGenerator : MonoBehaviour
         display.DrawTextureMap(
             TextureGenerator.TextureFromColourMap(
                 noiseMapCache,
-                regions,
-                mapWidth,
-                mapWidth
+                options.regions,
+                options.noiseOptions.mapWidth,
+                options.noiseOptions.mapWidth
             ));
     }
 
     public void SpawnObjects()
     {
-        var locations = SpawnManager.SpawnEntities(NoiseMap.GetSpawnMap(), spawnPool, seed);
+        var locations = SpawnManager.SpawnEntities(NoiseMap.GetSpawnMap(), options.spawnPool, options.noiseOptions.seed);
         for (int i = 0; i < locations.Length; i++)
         {
             foreach (var location in locations[i])
@@ -136,11 +123,11 @@ public class MapGenerator : MonoBehaviour
                 int x = location[0];
                 int y = location[1];
 
-                Vector3 loc = new Vector3(x, (noiseMapCache[x, y] * depth) + spawnPool[i].spawnOffsetY, y);
+                Vector3 loc = new Vector3(x, (noiseMapCache[x, y] * options.noiseOptions.depth) + options.spawnPool[i].spawnOffsetY, y);
 
-                GameObject obj = Instantiate(spawnPool[i].obj, loc, Quaternion.Euler(0, 0, 0));
+                GameObject obj = Instantiate(options.spawnPool[i].obj, loc, Quaternion.Euler(0, 0, 0));
                 
-                obj.transform.localScale = spawnPool[i].scale;
+                obj.transform.localScale = options.spawnPool[i].scale;
                 obj.transform.parent = spawnerPool;
                 objectPool.Add(obj);
             }
