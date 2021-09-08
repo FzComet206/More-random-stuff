@@ -391,17 +391,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c90bd63d4364c8b4286733110bd45c4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapWidth: 1800
-  mapHeight: 900
-  depth: 3
-  seed: 174115261
-  areas:
-  - numberOfCaves: 6
-  - numberOfCaves: 12
-  - numberOfCaves: 15
-  - numberOfCaves: 15
-  - numberOfCaves: 12
-  - numberOfCaves: 6
   options:
     mapWidth: 1800
     mapHeight: 900
@@ -414,6 +403,17 @@ MonoBehaviour:
     - numberOfCaves: 15
     - numberOfCaves: 12
     - numberOfCaves: 6
+    map:
+      roomType: 0
+      hallType: 0
+      connectionType: 0
+    regions:
+    - name: xd
+      height: 3
+      color: {r: 0.63529414, g: 0.9411765, b: 1, a: 0}
+    - name: 
+      height: 0
+      color: {r: 0.49019608, g: 0.26666668, b: 0.09803922, a: 0}
   regions:
   - name: xd
     height: 3

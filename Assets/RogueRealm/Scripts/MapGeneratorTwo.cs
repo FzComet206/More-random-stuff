@@ -1,10 +1,26 @@
+using System;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using Random = System.Random;
 
 public class MapGeneratorTwo : MonoBehaviour
 {
+    public enum RoomType { Square, Cellular }
+    public enum HallType { Straight, Slope }
+    public enum ConnectionType { Msp, MspRandom, GridRandom }
+    public enum MeshType { HeightMap, MarchingSquare }
+    
+    [System.Serializable]
+    public struct MapStructure
+    {
+        public RoomType roomType;
+        public HallType hallType;
+        public ConnectionType connectionType;
+        public MeshType meshType;
+    }
+    
     [System.Serializable]
     public struct Area
     {
@@ -19,11 +35,12 @@ public class MapGeneratorTwo : MonoBehaviour
         public int depth;
         public int seed;
         public Area[] areas;
+        public MapStructure map;
+        public MapGenerator.TerrainType[] regions;
     }
 
     // serialize fields
     public MapOptions2 options;
-    public MapGenerator.TerrainType[] regions;
     
     // cache
     private float[,] noiseMapCache;
@@ -45,7 +62,41 @@ public class MapGeneratorTwo : MonoBehaviour
     {
         GetNoiseMap();
         ActualMapDisplay display = FindObjectOfType<ActualMapDisplay>();
-        display.DrawMeshMap(MeshGenerator.GenerateTerrainMesh(noiseMapCache, options.depth, true));
+        
+        if (options.map.meshType == MeshType.HeightMap)
+        {
+            display.DrawMeshMap(MeshGenerator.GenerateTerrainMesh(
+                noiseMapCache, 
+                options.depth,
+                true));
+            return;
+        }
+
+        if (options.map.meshType == MeshType.MarchingSquare)
+        {
+            int height = noiseMapCache.GetLength(0);
+            int width = noiseMapCache.GetLength(1);
+            int[,] marchingSquareMap = new int[height, width];
+            
+            for (int i = 0; i < height;i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    if (noiseMapCache[i, j] > 0.1)
+                    {
+                        marchingSquareMap[i, j] = 1;
+                    }
+                    else
+                    {
+                        marchingSquareMap[i, j] = 0;
+                    }
+                }
+            }
+            
+            // display.DrawMeshMap(MeshGenerator2.GenerateMesh(
+            //    marchingSquareMap,
+            //    1));
+        }
     }
 
     public void DrawTextureMap()
@@ -54,7 +105,7 @@ public class MapGeneratorTwo : MonoBehaviour
         display.DrawTextureMap(
             TextureGenerator.TextureFromColourMap(
                 noiseMapCache,
-                regions,
+                options.regions,
                 options.mapWidth,
                 options.mapHeight
             ));
